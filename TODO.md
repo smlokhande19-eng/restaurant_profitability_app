@@ -1,32 +1,18 @@
-# Restaurant Profitability Code Fixes - TODO
-Status: ✅ **ALL FIXES COMPLETE** 🎉
+# Net Profit by Channel in Centre - Task Steps
 
-## Completed Steps:
+## Step 1: ✅ Create TODO.md (done)
 
-### ✅ 1. Fixed Channel_Profitability_Analysis.py
-- Removed invalid git commands (SyntaxError fixed)
+## Step 2: ✅ Fix app.py data path and enhance central "big diagram" for net profit by channel (done)
+- Change hardcoded file_path to relative "SkyCity Auckland Restaurants & Bars.csv"
+- In Tab 1 (Overview), add prominent full-width large bar chart: Total Net Profit by Channel (big diagram, centered)
+- Increase chart height/size, use wide layout
+- Update CSS for better centering/emphasis
 
-### ✅ 2. Fixed project.py  
-- Replaced hardcoded path → "SkyCity Auckland Restaurants & Bars.csv" (FileNotFoundError fixed)
+## Step 3: ✅ Test app (streamlit run app.py launched successfully at http://localhost:8502 - big central net profit chart ready)
 
-### ✅ 3. Fixed restaurant_profitability_app.py (duplicate)
-- Updated path to "../SkyCity Auckland Restaurants & Bars.csv"
+## Step 4: Cleanup duplicates (optional)
+- Remove Channel_Profitability_Analysis_fixed.py
+- Handle ../restuarnt_profitabilit_app/ duplicate
 
-### ✅ 4. Verified & Tested
-```
-✅ python Channel_Profitability_Analysis.py → No SyntaxError
-✅ streamlit run project.py → Loads CSV successfully
-✅ All CSV columns confirmed present
-```
-
-**Progress: 4/4 complete** ✅
-
-**Run the apps:**
-```
-cd e:/github/project-1
-streamlit run project.py
-# or
-cd e:/github/restuarnt_profitabilit_app
-streamlit run restaurant_profitability_app.py
-```
+## Step 5: Complete task
 

@@ -1,0 +1,17 @@
+login admin1
+create_file project1 csv
+create_file project2 csv
+batch_create clients:json,reports:csv,analytics:xml,backup:log,settings:config
+view_files
+list_files
+logout
+login merchant1
+create_file sales json
+permissions
+check_client merchant1
+logout
+login pcs1
+permissions
+cleanup_temp
+status
+exit

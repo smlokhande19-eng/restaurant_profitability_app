@@ -1,0 +1,8 @@
+login admin1
+create_file report csv
+create_file config json
+batch_create datab:csv,settings:config,notes:txt
+view_files
+check_client admin1
+status
+exit
