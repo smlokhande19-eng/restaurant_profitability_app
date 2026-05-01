@@ -130,10 +130,10 @@ def calculate_kpis(df):
 
 # Main app
 def main():
-    st.markdown('<div class="main-header">🍽️ Restaurant Sales & Profit Trends</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">Restaurant Sales & Profit Trends</div>', unsafe_allow_html=True)
     
     # Sidebar
-    st.sidebar.title("📊 Controls & Filters")
+    st.sidebar.title("Controls & Filters")
     
     # File path - as requested
     file_path = r"E:\github\project-1\SkyCity Auckland Restaurants & Bars.csv"
@@ -142,15 +142,15 @@ def main():
     df = load_data(file_path)
     
     if df is None:
-        st.error("❌ Could not load data. Please check the file path.")
+        st.error("Could not load data. Please check the file path.")
         st.info(f"Looking for file at: {file_path}")
-        st.info("💡 Tip: Make sure the CSV file exists at the specified location.")
+        st.info("Tip: Make sure the CSV file exists at the specified location.")
         return
     
-    st.sidebar.success(f"✅ Data loaded: {len(df)} restaurants")
+    st.sidebar.success(f"Data loaded: {len(df)} restaurants")
     
     # Filters
-    st.sidebar.markdown("### 🎯 Filters")
+    st.sidebar.markdown("### Filters")
     
     # Cuisine filter
     cuisines = ['All'] + sorted(df['CuisineType'].unique().tolist())
@@ -176,14 +176,13 @@ def main():
     st.sidebar.info(f"Filtered: {len(filtered_df)} restaurants")
     
     # What-if analysis sliders
-    st.sidebar.markdown("### 🔧 What-If Analysis")
+    st.sidebar.markdown("### What-If Analysis")
     commission_adjustment = st.sidebar.slider(
         "Commission Rate Adjustment (%)",
         min_value=-50,
         max_value=50,
         value=0,
-        step=5,
-        help="Adjust third-party commission rates"
+        step=5
     )
     
     delivery_cost_adjustment = st.sidebar.slider(
@@ -191,8 +190,7 @@ def main():
         min_value=-50,
         max_value=50,
         value=0,
-        step=5,
-        help="Adjust self-delivery costs"
+        step=5
     )
     
     # Apply what-if adjustments
@@ -225,17 +223,27 @@ def main():
     kpis = calculate_kpis(filtered_df)
     
     # Main content tabs
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "📈 Overview", 
-        "💰 Channel Comparison", 
-        "📊 Margin Analysis", 
-        "🔍 Cost Breakdown",
-        "🎯 Segment Analysis",
-        "📉 Risk Assessment"
-    ])
+    tabs = [
+        "Overview", 
+        "Channel Comparison", 
+        "Margin Analysis", 
+        "Cost Breakdown",
+        "Segment Analysis",
+        "Risk Assessment"
+    ]
+    selected_tab = st.pills("Navigation", tabs, default="Overview", label_visibility="collapsed")
+    if not selected_tab:
+        selected_tab = "Overview"
+    
+    channel_map = {
+        'In-Store': {'revenue': 'InStoreRevenue', 'profit': 'InStoreNetProfit'},
+        'Uber Eats': {'revenue': 'UberEatsRevenue', 'profit': 'UberEatsNetProfit'},
+        'DoorDash': {'revenue': 'DoorDashRevenue', 'profit': 'DoorDashNetProfit'},
+        'Self-Delivery': {'revenue': 'SelfDeliveryRevenue', 'profit': 'SelfDeliveryNetProfit'}
+    }
     
     # TAB 1: Overview
-    with tab1:
+    if selected_tab == "Overview":
         st.markdown('<div class="section-header">Executive Summary</div>', unsafe_allow_html=True)
         
         # Key metrics
@@ -244,30 +252,26 @@ def main():
         with col1:
             st.metric(
                 "Total Revenue",
-                f"${kpis['total_revenue']:,.0f}",
-                help="Total revenue across all channels"
+                f"${kpis['total_revenue']:,.0f}"
             )
         
         with col2:
             st.metric(
                 "Total Profit",
-                f"${kpis['total_profit']:,.0f}",
-                help="Total net profit across all channels"
+                f"${kpis['total_profit']:,.0f}"
             )
         
         with col3:
             overall_margin = (kpis['total_profit'] / kpis['total_revenue'] * 100)
             st.metric(
                 "Overall Margin",
-                f"{overall_margin:.1f}%",
-                help="Overall profit margin"
+                f"{overall_margin:.1f}%"
             )
         
         with col4:
             st.metric(
                 "Restaurants",
-                len(filtered_df),
-                help="Number of restaurants in filtered dataset"
+                len(filtered_df)
             )
         
         # Channel distribution
@@ -333,7 +337,7 @@ def main():
         
         # Key insights
         st.markdown('<div class="insight-box">', unsafe_allow_html=True)
-        st.markdown("#### 💡 Key Insights")
+        st.markdown("#### Key Insights")
         
         # Find most profitable channel
         channel_profits = {
@@ -350,7 +354,7 @@ def main():
         st.markdown('</div>', unsafe_allow_html=True)
     
     # TAB 2: Channel Comparison
-    with tab2:
+    elif selected_tab == "Channel Comparison":
         st.markdown('<div class="section-header">Channel Profitability Comparison</div>', unsafe_allow_html=True)
         
         # Profit comparison
@@ -442,7 +446,7 @@ def main():
         st.dataframe(channel_data, use_container_width=True, hide_index=True)
     
     # TAB 3: Margin Analysis
-    with tab3:
+    elif selected_tab == "Margin Analysis":
         st.markdown('<div class="section-header">Margin & Cost Analysis</div>', unsafe_allow_html=True)
         
         # Waterfall chart for each channel
@@ -452,14 +456,6 @@ def main():
             "Select Channel for Waterfall Analysis",
             ['In-Store', 'Uber Eats', 'DoorDash', 'Self-Delivery']
         )
-        
-        # Calculate waterfall components
-        channel_map = {
-            'In-Store': {'revenue': 'InStoreRevenue', 'profit': 'InStoreNetProfit'},
-            'Uber Eats': {'revenue': 'UberEatsRevenue', 'profit': 'UberEatsNetProfit'},
-            'DoorDash': {'revenue': 'DoorDashRevenue', 'profit': 'DoorDashNetProfit'},
-            'Self-Delivery': {'revenue': 'SelfDeliveryRevenue', 'profit': 'SelfDeliveryNetProfit'}
-        }
         
         channel_cols = channel_map[selected_waterfall_channel]
         total_revenue = filtered_df[channel_cols['revenue']].sum()
@@ -566,7 +562,7 @@ def main():
         st.plotly_chart(fig, width='stretch')
     
     # TAB 4: Cost Breakdown
-    with tab4:
+    elif selected_tab == "Cost Breakdown":
         st.markdown('<div class="section-header">Detailed Cost Component Analysis</div>', unsafe_allow_html=True)
         
         # Commission impact
@@ -585,8 +581,7 @@ def main():
         with col1:
             st.metric(
                 "Total Commission Paid",
-                f"${commission_data['TotalCommission'].sum():,.0f}",
-                help="Total commission paid to third-party platforms"
+                f"${commission_data['TotalCommission'].sum():,.0f}"
             )
         
         with col2:
@@ -594,8 +589,7 @@ def main():
             commission_rate_avg = (commission_data['TotalCommission'].sum() / delivery_revenue * 100) if delivery_revenue > 0 else 0
             st.metric(
                 "Average Commission Rate",
-                f"{commission_rate_avg:.1f}%",
-                help="Average commission as % of delivery revenue"
+                f"{commission_rate_avg:.1f}%"
             )
         
         # Commission by segment
@@ -632,16 +626,14 @@ def main():
         with col1:
             st.metric(
                 "Total Self-Delivery Cost",
-                f"${delivery_data['SD_DeliveryTotalCost'].sum():,.0f}",
-                help="Total cost for self-managed delivery"
+                f"${delivery_data['SD_DeliveryTotalCost'].sum():,.0f}"
             )
         
         with col2:
             avg_cost_per_order = delivery_data['DeliveryCostPerOrder'].mean()
             st.metric(
                 "Average Cost per Delivery",
-                f"${avg_cost_per_order:.2f}",
-                help="Average cost per self-delivery order"
+                f"${avg_cost_per_order:.2f}"
             )
         
         # Delivery cost by cuisine
@@ -698,7 +690,7 @@ def main():
         st.plotly_chart(fig, width='stretch')
     
     # TAB 5: Segment Analysis
-    with tab5:
+    elif selected_tab == "Segment Analysis":
         st.markdown('<div class="section-header">Cuisine & Segment Profitability</div>', unsafe_allow_html=True)
         
         # Profitability heatmap by cuisine and segment
@@ -749,7 +741,7 @@ def main():
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("#### 🏆 Top 5 Most Profitable")
+            st.markdown("#### Top 5 Most Profitable")
             
             top_performers = filtered_df.copy()
             top_performers['TotalProfit'] = (
@@ -767,7 +759,7 @@ def main():
             st.dataframe(top_5, use_container_width=True, hide_index=True)
         
         with col2:
-            st.markdown("#### 📉 Bottom 5 (Lowest Profit)")
+            st.markdown("#### Bottom 5 (Lowest Profit)")
             
             bottom_5 = top_performers.nsmallest(5, 'TotalProfit')[
                 ['RestaurantName', 'CuisineType', 'Segment', 'TotalProfit']
@@ -812,7 +804,7 @@ def main():
         st.plotly_chart(fig, use_container_width=True)
     
     # TAB 6: Risk Assessment
-    with tab6:
+    elif selected_tab == "Risk Assessment":
         st.markdown('<div class="section-header">Profit Volatility & Risk Assessment</div>', unsafe_allow_html=True)
         
         # Calculate volatility metrics
@@ -858,7 +850,7 @@ def main():
         
         with col3:
             cv = (std_profit / mean_profit * 100) if mean_profit != 0 else 0
-            st.metric("Volatility (CV)", f"{cv:.1f}%", help="Coefficient of Variation")
+            st.metric("Volatility (CV)", f"{cv:.1f}%")
         
         with col4:
             loss_count = len(filtered_df[filtered_df[risk_profit_col] < 0])
@@ -928,9 +920,9 @@ def main():
             
             st.dataframe(high_risk_display, use_container_width=True, hide_index=True)
             
-            st.warning(f"⚠️ {len(high_risk)} restaurants have losses in 2 or more channels")
+            st.warning(f"{len(high_risk)} restaurants have losses in 2 or more channels")
         else:
-            st.success("✅ No restaurants with losses in multiple channels")
+            st.success("No restaurants with losses in multiple channels")
 
 if __name__ == "__main__":
     main()
